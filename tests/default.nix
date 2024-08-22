@@ -74,6 +74,10 @@ let
       image = examples.ownership;
       pattern = "^-r--r--r-- 1 1001 1001 0 Jan  1  1970 test1.txt";
     };
+    metadata = testScript {
+      image = examples.metadata;
+      pattern = "test author";
+    };
     # Ensure the Nix database is correctly initialized by querying the
     # closure of the Nix binary.
     nix = testScript {
@@ -177,4 +181,3 @@ let
       ${scripts}
     '';
 in tests // { inherit all; }
-
