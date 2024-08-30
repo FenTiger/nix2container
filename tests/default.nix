@@ -74,10 +74,6 @@ let
       image = examples.ownership;
       pattern = "^-r--r--r-- 1 1001 1001 0 Jan  1  1970 test1.txt";
     };
-    metadata = testScript {
-      image = examples.metadata;
-      pattern = "test author";
-    };
     # Ensure the Nix database is correctly initialized by querying the
     # closure of the Nix binary.
     nix = testScript {
@@ -146,6 +142,26 @@ let
       timestamp = "2024-05-13 09:31:10";
     in pkgs.writeScriptBin "test-script" ''
       ${image.copyToPodman}/bin/copy-to-podman
+      created=$(${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag} -f '{{ .Created }}')
+      if echo $created | ${pkgs.gnugrep}/bin/grep '${timestamp}' > /dev/null;
+      then
+        echo "Test passed"
+      else
+        echo "Expected Created attribute to contain: ${timestamp}"
+        echo ""
+        echo "Actual Created attribute: $created"
+        echo ""
+        echo "Error: test failed"
+        exit $ret
+      fi
+    '';
+    metadata = let
+      image = examples.metadata;
+    in pkgs.writeScriptBin "test-script" ''
+      ${image.copyToPodman}/bin/copy-to-podman
+      echo @@@
+      ${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag}
+      echo @@@
       created=$(${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag} -f '{{ .Created }}')
       if echo $created | ${pkgs.gnugrep}/bin/grep '${timestamp}' > /dev/null;
       then
