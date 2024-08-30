@@ -162,9 +162,7 @@ let
       expected_comment = "test comment";
     in pkgs.writeScriptBin "test-script" ''
       ${image.copyToPodman}/bin/copy-to-podman
-      echo @@@
       ${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag}
-      echo @@@
       created_by=$(${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag} -f '{{ .History.created_by }}')
       author=$(${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag} -f '{{ .History.author }}')
       comment=$(${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag} -f '{{ .History.comment }}')
