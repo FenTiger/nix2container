@@ -163,11 +163,11 @@ let
       ${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag}
       echo @@@
       created=$(${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag} -f '{{ .Created }}')
-      if echo $created | ${pkgs.gnugrep}/bin/grep '${timestamp}' > /dev/null;
+      if echo $created | ${pkgs.gnugrep}/bin/grep 'arrrr' > /dev/null;
       then
         echo "Test passed"
       else
-        echo "Expected Created attribute to contain: ${timestamp}"
+        echo "Expected Created attribute to contain: arrrr"
         echo ""
         echo "Actual Created attribute: $created"
         echo ""
