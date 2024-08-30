@@ -157,23 +157,25 @@ let
     '';
     metadata = let
       image = examples.metadata;
+      expected_created_by = "test created_by";
     in pkgs.writeScriptBin "test-script" ''
       ${image.copyToPodman}/bin/copy-to-podman
       echo @@@
       ${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag}
       echo @@@
-      created=$(${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag} -f '{{ .Created }}')
-      if echo $created | ${pkgs.gnugrep}/bin/grep 'arrrr' > /dev/null;
+      created_by=$(${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag} -f '{{ .History.created_by }}')
+      author=$(${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag} -f '{{ .History.author }}')
+      comment=$(${pkgs.podman}/bin/podman image inspect ${image.imageName}:${image.imageTag} -f '{{ .History.comment }}')
+      if ! echo $created_by | ${pkgs.gnugrep}/bin/grep '${expected_created_by}' > /dev/null;
       then
-        echo "Test passed"
-      else
-        echo "Expected Created attribute to contain: arrrr"
+        echo "Expected Created attribute to contain: ${expected_created_by}"
         echo ""
         echo "Actual Created attribute: $created"
         echo ""
         echo "Error: test failed"
         exit $ret
       fi
+      echo "Test passed"
     '';
   } //
   (pkgs.lib.mapAttrs' (name: drv: {
